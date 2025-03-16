@@ -1,6 +1,7 @@
 package com.example.demo.scene.domain;
 
 import com.example.demo.user.domain.User;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,5 +31,6 @@ public class Scene {
     private Double longitude;
 
     @Column(nullable = false)
+    @JsonProperty("isVisible")
     private boolean isVisible = false;
 }
