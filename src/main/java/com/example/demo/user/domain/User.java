@@ -14,7 +14,7 @@ import lombok.Setter;
 public class User {
 
     @Id
-    @Column(nullable = false, unique = false)
+    @Column(nullable = false, unique = true)
     private String socialId;
 
     @Column(nullable = false)

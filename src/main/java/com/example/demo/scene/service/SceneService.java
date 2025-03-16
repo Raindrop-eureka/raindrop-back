@@ -41,8 +41,6 @@ public class SceneService {
                 .orElseThrow(() -> new IllegalArgumentException("Scene not found"));
 
         scene.setTheme(request.getTheme());
-        scene.setLatitude(request.getLatitude());
-        scene.setLongitude(request.getLongitude());
 
         return sceneRepository.save(scene);
     }
