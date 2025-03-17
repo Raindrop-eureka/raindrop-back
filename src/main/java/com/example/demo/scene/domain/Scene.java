@@ -18,7 +18,7 @@ public class Scene {
     private Long sceneId;
 
     @OneToOne
-    @JoinColumn(name = "social_id", referencedColumnName = "socialId", nullable = false)
+    @JoinColumn(name = "social_id", referencedColumnName = "social_id", nullable = false)
     private User user;
 
     @Column(nullable = false)
