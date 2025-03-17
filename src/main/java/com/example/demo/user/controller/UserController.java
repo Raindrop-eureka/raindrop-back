@@ -1,22 +1,13 @@
 package com.example.demo.user.controller;
 
-import com.example.demo.config.KakaoConfig;
 import com.example.demo.user.dto.*;
 import com.example.demo.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.http.parser.Authorization;
 import org.springframework.http.*;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j // Lombok을 이용한 로깅
 @RestController
