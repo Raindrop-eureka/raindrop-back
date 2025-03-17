@@ -4,9 +4,9 @@ import com.example.demo.scene.domain.Scene;
 import com.example.demo.scene.dto.SceneCreateRequest;
 import com.example.demo.scene.dto.SceneUpdateRequest;
 import com.example.demo.scene.dto.SceneUpdateVisibilityRequest;
-import com.example.demo.scene.repository.SceneRepository;
+import com.example.demo.scene.repository.SceneMapper;
 import com.example.demo.user.domain.User;
-import com.example.demo.user.repository.UserRepository;
+import com.example.demo.user.repository.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,14 +15,17 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class SceneService {
 
-    private final SceneRepository sceneRepository;
-    private final UserRepository userRepository;
+    private final SceneMapper sceneMapper;  // SceneMapper로 변경
+    private final UserMapper userMapper;  // UserMapper로 변경
 
     // SCENE 생성
     @Transactional
     public Scene createScene(SceneCreateRequest request) {
-        User user = userRepository.findById(request.getSocialId())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        // User를 SocialId로 찾기
+        User user = userMapper.findBySocialId(request.getSocialId());
+        if (user == null) {
+            throw new IllegalArgumentException("User not found");
+        }
 
         Scene scene = new Scene();
         scene.setUser(user);
@@ -31,35 +34,47 @@ public class SceneService {
         scene.setLongitude(request.getLongitude());
         scene.setVisible(false);
 
-        return sceneRepository.save(scene);
+        // Scene 저장
+        sceneMapper.saveScene(scene);  // SceneMapper의 insert 메서드 호출
+        return scene;
     }
 
     // SCENE 수정
     @Transactional
     public Scene updateScene(Long sceneId, SceneUpdateRequest request) {
-        Scene scene = sceneRepository.findById(sceneId)
-                .orElseThrow(() -> new IllegalArgumentException("Scene not found"));
+        // Scene을 ID로 찾기
+        Scene scene = sceneMapper.findBySceneId(sceneId);
+        if (scene == null) {
+            throw new IllegalArgumentException("Scene not found");
+        }
 
         scene.setTheme(request.getTheme());
-
-        return sceneRepository.save(scene);
+        sceneMapper.updateScene(scene);  // SceneMapper의 update 메서드 호출
+        return scene;
     }
 
     // SCENE 공개 설정 수정
     @Transactional
     public Scene updateVisibility(Long sceneId, SceneUpdateVisibilityRequest request) {
-        Scene scene = sceneRepository.findById(sceneId)
-                .orElseThrow(() -> new IllegalArgumentException("Scene not found"));
+        // Scene을 ID로 찾기
+        Scene scene = sceneMapper.findBySceneId(sceneId);
+        if (scene == null) {
+            throw new IllegalArgumentException("Scene not found");
+        }
 
         scene.setVisible(request.isVisible());
-        return sceneRepository.save(scene); // 수정된 Scene 반환
+        sceneMapper.updateScene(scene);  // SceneMapper의 update 메서드 호출
+        return scene;
     }
-
 
     // SCENE 조회
     @Transactional(readOnly = true)
     public Scene getScene(Long sceneId) {
-        return sceneRepository.findById(sceneId)
-                .orElseThrow(() -> new IllegalArgumentException("Scene not found"));
+        // Scene을 ID로 찾기
+        Scene scene = sceneMapper.findBySceneId(sceneId);
+        if (scene == null) {
+            throw new IllegalArgumentException("Scene not found");
+        }
+        return scene;
     }
 }

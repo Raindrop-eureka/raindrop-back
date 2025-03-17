@@ -1,7 +1,6 @@
 package com.example.demo.user.domain;
 
-import jakarta.persistence.*;
-import jakarta.persistence.Id;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,14 +8,13 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@Entity
-@Table(name = "`user`")
 public class User {
-
-    @Id
-    @Column(nullable = false, unique = true)
     private String socialId;
-
-    @Column(nullable = false)
     private String name;
+
+    @Builder
+    public User(String socialId, String name) {
+        this.socialId = socialId;
+        this.name = name;
+    }
 }
