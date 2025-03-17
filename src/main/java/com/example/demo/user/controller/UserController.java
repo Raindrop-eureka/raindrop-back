@@ -1,10 +1,8 @@
 package com.example.demo.user.controller;
 
 import com.example.demo.config.KakaoConfig;
-import com.example.demo.user.dto.KakaoAuthResponse;
-import com.example.demo.user.dto.KakaoInfoResponse;
-import com.example.demo.user.dto.KakaoLoginRequest;
-import com.example.demo.user.dto.KakaoTokenResponse;
+import com.example.demo.user.dto.*;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,10 +25,9 @@ import java.util.Map;
 public class UserController {
     private final KakaoConfig kakaoConfig;
 
+    @Operation(summary = "accessToken 발급", description = "code로 accessToken을 발급받아 카카오 로그인 처리")
     @PostMapping("/login")
     public ResponseEntity<KakaoAuthResponse> login(@RequestBody KakaoLoginRequest request) {
-        log.info("Received Kakao login request: {}", request.getCode());
-
         String code = request.getCode(); // JSON에서 code 값 추출
 
         // Body 생성
@@ -39,17 +36,13 @@ public class UserController {
         params.add("code", code);
         params.add("redirect_uri", kakaoConfig.getRedirectUri());
         params.add("client_id", kakaoConfig.getClientId());
-        log.info("Generated request body: {}", params); // Body 확인
 
         // Header 생성
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=UTF-8");
 
-        log.info("Generated headers: {}", headers); // Header 확인
-
         // 요청 객체 생성
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(params, headers);
-        log.info("Final request entity: {}", entity); // 최종 요청 객체 확인
 
         // Post 요청 보내기
         RestTemplate rt = new RestTemplate();
@@ -66,8 +59,6 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
 
-        log.info("Response from Kakao: {}", tokenResponse);
-
         // 필요한 값만 포함하여 반환
         KakaoAuthResponse authResponse = new KakaoAuthResponse(
                 tokenResponse.getAccessToken(),
@@ -77,15 +68,14 @@ public class UserController {
         return ResponseEntity.ok(authResponse);
     }
 
+    @Operation(summary = "token 갱신", description = "refresh-token으로 만료된 access-token과 refresh-token을 갱신해 재발급")
     @PostMapping(path = "/refresh")
     public ResponseEntity<KakaoAuthResponse> getRefreshToken(@RequestHeader("refresh-token") String refreshToken) {
         //Body생성
-        log.info("Received refresh token: {}", refreshToken);
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "refresh_token");
         params.add("refresh_token", refreshToken);
         params.add("client_id", kakaoConfig.getClientId());
-        log.info("Generated request body: {}", params); // Body 확인
 
         //Header 생성
         HttpHeaders headers = new HttpHeaders();
@@ -104,7 +94,6 @@ public class UserController {
 
         KakaoTokenResponse tokenResponse = response.getBody();
         if (tokenResponse == null) {
-            log.error("Failed to get response from Kakao");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
 
@@ -119,9 +108,9 @@ public class UserController {
         return ResponseEntity.ok(authResponse);
     }
 
+    @Operation(summary = "사용자 정보 조회", description = "accessToken으로 사용자 정보를 조회")
     @GetMapping(path = "/info")
-    public Map<String, String> getUserInfo(@RequestHeader("access-token") String accessToken ){
-
+    public UserInfoResponse getUserInfo(@RequestHeader("access-token") String accessToken ){
         // Body 생성
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 
@@ -146,12 +135,7 @@ public class UserController {
         String nickname = kakaoInfoResponse.getKakao_account().getProfile().getNickname();
         String profileImageUrl = kakaoInfoResponse.getKakao_account().getProfile().getProfile_image_url();
 
-        // 반환할 정보
-        Map<String, String> result = new HashMap<>();
-        result.put("email", email);
-        result.put("nickname", nickname);
-        result.put("profile_image_url", profileImageUrl);
-
-        return result;
+        // DTO 객체로 반환
+        return new UserInfoResponse(email, nickname, profileImageUrl);
     }
 }
