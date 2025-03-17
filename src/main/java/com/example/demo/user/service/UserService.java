@@ -3,7 +3,7 @@ package com.example.demo.user.service;
 import com.example.demo.config.KakaoConfig;
 import com.example.demo.user.domain.User;
 import com.example.demo.user.dto.*;
-import com.example.demo.user.repository.UserRepository;
+import com.example.demo.user.repository.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -14,19 +14,12 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final KakaoConfig kakaoConfig;
     private final RestTemplate restTemplate = new RestTemplate();
-    private final UserRepository userRepository;
-
-    //유저 추가 메서드
-    public User saveUser(AddUserRequest request){
-        return userRepository.save(request.toEntity());
-    }
+    private final UserMapper userMapper;
 
     /**
      * 카카오 로그인 - 액세스 토큰 발급
@@ -97,19 +90,18 @@ public class UserService {
         String nickname = kakaoInfoResponse.getKakao_account().getProfile().getNickname(); // 카카오 사용자 이름
         String profileImageUrl = kakaoInfoResponse.getKakao_account().getProfile().getProfile_image_url(); // 카카오 프로필 이미지 URL
 
-        // DB에서 userId로 사용자 찾기
-        Optional<User> userOptional = userRepository.findBySocialId(socialId);
-
+        // DB에서 socialId로 사용자 찾기
+        User user = userMapper.findBySocialId(socialId);
         boolean isNewUser = false;
 
         // 만약 사용자가 없다면 DB에 등록
-        if (userOptional.isEmpty()) {
+        if (user == null) {
             User newUser = User.builder()
                     .socialId(socialId)
                     .name(nickname)
                     .build();
-            userRepository.save(newUser);
-            isNewUser = true;  // 신규 유저인 경우
+            userMapper.saveUser(newUser);  // ✅ JPA save() → MyBatis insert
+            isNewUser = true;
         }
 
         // UserInfoResponse 반환 (이 값은 프론트엔드에 전달)
