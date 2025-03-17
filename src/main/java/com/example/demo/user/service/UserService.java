@@ -14,6 +14,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -87,16 +89,41 @@ public class UserService {
         return new KakaoAuthResponse(tokenResponse.getAccessToken(), tokenResponse.getRefreshToken());
     }
 
-    /**
-     * 사용자 정보 조회
-     */
     public UserInfoResponse getUserInfo(String accessToken) {
+        // 카카오 API로 사용자 정보 요청
+        KakaoInfoResponse kakaoInfoResponse = getKakaoUserInfo(accessToken);
+
+        String socialId = String.valueOf(kakaoInfoResponse.getKakao_account().getEmail());  // 카카오의 이메일을 socialId로 사용
+        String nickname = kakaoInfoResponse.getKakao_account().getProfile().getNickname(); // 카카오 사용자 이름
+        String profileImageUrl = kakaoInfoResponse.getKakao_account().getProfile().getProfile_image_url(); // 카카오 프로필 이미지 URL
+
+        // DB에서 userId로 사용자 찾기
+        Optional<User> userOptional = userRepository.findBySocialId(socialId);
+
+        boolean isNewUser = false;
+
+        // 만약 사용자가 없다면 DB에 등록
+        if (userOptional.isEmpty()) {
+            User newUser = User.builder()
+                    .socialId(socialId)
+                    .name(nickname)
+                    .build();
+            userRepository.save(newUser);
+            isNewUser = true;  // 신규 유저인 경우
+        }
+
+        // UserInfoResponse 반환 (이 값은 프론트엔드에 전달)
+        return new UserInfoResponse(socialId, nickname, profileImageUrl,isNewUser);
+    }
+
+    private KakaoInfoResponse getKakaoUserInfo(String accessToken) {
+        // 요청 헤더 생성
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=UTF-8");
         headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
 
-        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(new LinkedMultiValueMap<>(), headers);
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
 
+        // 카카오 API 요청
         ResponseEntity<KakaoInfoResponse> response = restTemplate.exchange(
                 "https://kapi.kakao.com/v2/user/me?secure_resource=true&property_keys=[\"kakao_account.email\",\"kakao_account.profile.nickname\",\"kakao_account.profile.profile_image_url\"]",
                 HttpMethod.GET,
@@ -104,15 +131,6 @@ public class UserService {
                 KakaoInfoResponse.class
         );
 
-        KakaoInfoResponse kakaoInfoResponse = response.getBody();
-        if (kakaoInfoResponse == null) {
-            throw new RuntimeException("사용자 정보 조회 실패");
-        }
-
-        return new UserInfoResponse(
-                kakaoInfoResponse.getKakao_account().getEmail(),
-                kakaoInfoResponse.getKakao_account().getProfile().getNickname(),
-                kakaoInfoResponse.getKakao_account().getProfile().getProfile_image_url()
-        );
+        return response.getBody();
     }
 }
