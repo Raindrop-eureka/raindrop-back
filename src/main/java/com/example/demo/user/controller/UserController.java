@@ -77,6 +77,48 @@ public class UserController {
         return ResponseEntity.ok(authResponse);
     }
 
+    @PostMapping(path = "/refresh")
+    public ResponseEntity<KakaoAuthResponse> getRefreshToken(@RequestHeader("refresh-token") String refreshToken) {
+        //Body생성
+        log.info("Received refresh token: {}", refreshToken);
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("grant_type", "refresh_token");
+        params.add("refresh_token", refreshToken);
+        params.add("client_id", kakaoConfig.getClientId());
+        log.info("Generated request body: {}", params); // Body 확인
+
+        //Header 생성
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=UTF-8");
+
+        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(params, headers);
+
+        // Post 요청 보내기
+        RestTemplate rt = new RestTemplate();
+        ResponseEntity<KakaoTokenResponse> response = rt.exchange(
+                "https://kauth.kakao.com/oauth/token",
+                HttpMethod.POST,
+                entity,
+                KakaoTokenResponse.class
+        );
+
+        KakaoTokenResponse tokenResponse = response.getBody();
+        if (tokenResponse == null) {
+            log.error("Failed to get response from Kakao");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
+        log.info("Response from Kakao: {}", tokenResponse);
+
+        // 필요한 값만 포함하여 반환
+        KakaoAuthResponse authResponse = new KakaoAuthResponse(
+                tokenResponse.getAccessToken(),
+                tokenResponse.getRefreshToken()
+        );
+
+        return ResponseEntity.ok(authResponse);
+    }
+
     @GetMapping(path = "/info")
     public Map<String, String> getUserInfo(@RequestHeader("access-token") String accessToken ){
 
