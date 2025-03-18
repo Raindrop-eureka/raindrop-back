@@ -12,12 +12,29 @@
 *.lock
 
 # Gradle 관련 파일 무시
-.gradle/
-.gradle/**
+.gradle
+**/build/
+!src/**/build/
+.gradletasknamecache
+gradle-app.setting
+
 
 # 빌드 결과물 무시
 build/
 build/**
+/build/
+/bin/
+/out/
+/target/
 
 # application properties 파일 숨기기
 src/main/resources/application.properties
+
+# IDE 설정
+.idea/
+*.iml
+*.iws
+*.ipr
+.classpath
+.project
+.settings/
