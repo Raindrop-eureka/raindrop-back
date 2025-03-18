@@ -8,7 +8,5 @@ import lombok.Setter;
 public class SceneDto {
 
     private String theme;
-    private Double latitude;
-    private Double longitude;
     private boolean isMessageVisible;
 }

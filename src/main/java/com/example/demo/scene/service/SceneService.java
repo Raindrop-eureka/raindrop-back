@@ -1,7 +1,5 @@
 package com.example.demo.scene.service;
 
-import com.example.demo.location.domain.Location;
-import com.example.demo.location.repository.LocationMapper;
 import com.example.demo.scene.domain.Scene;
 import com.example.demo.scene.dto.SceneCreateRequest;
 import com.example.demo.scene.dto.SceneUpdateRequest;
@@ -19,7 +17,7 @@ public class SceneService {
 
     private final SceneMapper sceneMapper;
     private final UserMapper userMapper;
-    private final LocationMapper locationMapper;
+
     // SCENE 생성
     @Transactional
     public Scene createScene(SceneCreateRequest request) {
@@ -28,16 +26,9 @@ public class SceneService {
             throw new IllegalArgumentException("User not found");
         }
 
-        Location location = locationMapper.findByLatitudeAndLongitude(request.getLatitude(), request.getLongitude());
-        if (location == null) {
-            location = new Location(request.getLatitude(), request.getLongitude());
-            locationMapper.saveLocation(location);
-        }
-
         Scene scene = new Scene();
         scene.setUser(user);
         scene.setTheme(request.getTheme());
-        scene.setLocation(location);
         scene.setMessageVisible(false);
 
         // Scene 저장
