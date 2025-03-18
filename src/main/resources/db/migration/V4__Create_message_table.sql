@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS message CASCADE;
+
 CREATE TABLE message (
                          message_id BIGINT AUTO_INCREMENT NOT NULL,
                          scene_id BIGINT NOT NULL,
