@@ -38,7 +38,7 @@ public class SceneService {
         scene.setUser(user);
         scene.setTheme(request.getTheme());
         scene.setLocation(location);
-        scene.setVisible(false);
+        scene.setMessageVisible(false);
 
         // Scene 저장
         sceneMapper.saveScene(scene);
@@ -58,7 +58,7 @@ public class SceneService {
     @Transactional
     public Scene updateVisibility(Long sceneId, SceneUpdateVisibilityRequest request) {
         Scene scene = sceneMapper.findBySceneId(sceneId);
-        scene.setVisible(request.isVisible());
+        scene.setMessageVisible(request.isMessageVisible());
         sceneMapper.updateScene(scene);  // SceneMapper의 update 메서드 호출
         return scene;
     }

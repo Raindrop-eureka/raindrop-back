@@ -34,7 +34,7 @@ public class SceneController {
         return ResponseEntity.ok(scene);
     }
 
-    @Operation(summary = "Scene (메시지) 공개 상태 수정", description = "URL에서 sceneId를 받고 수정할 공개 상태를 RequestBody에서 받아 Scene의 메시지 공개 여부를 수정")
+    @Operation(summary = "Scene 메시지 공개 상태 수정", description = "URL에서 sceneId를 받고 수정할 메시지 공개 상태를 RequestBody에서 받아 Scene의 메시지 공개 여부를 수정")
     @PutMapping("/{sceneId}/visibility")
     public ResponseEntity<Scene> updateVisibility(
             @PathVariable Long sceneId,

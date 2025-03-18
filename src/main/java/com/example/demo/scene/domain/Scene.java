@@ -13,18 +13,18 @@ import lombok.Setter;
 public class Scene {
 
     private Long sceneId;
-    private User user;  // 연관 관계는 매핑 파일에서 처리
+    private User user;
     private String theme;
     private Location location;
 
-    @JsonProperty("isVisible")
-    private boolean isVisible = false;
+    @JsonProperty("isMessageVisible")
+    private boolean isMessageVisible = false;
 
-    public Scene(Long sceneId, User user, String theme, Location location, boolean isVisible) {
+    public Scene(Long sceneId, User user, String theme, Location location, boolean isMessageVisible) {
         this.sceneId = sceneId;
         this.user = user;
         this.theme = theme;
         this.location = location;
-        this.isVisible = isVisible;
+        this.isMessageVisible = isMessageVisible;
     }
 }

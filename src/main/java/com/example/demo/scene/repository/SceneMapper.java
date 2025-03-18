@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.*;
 public interface SceneMapper {
     // Scene 조회 - Location 테이블 조인 추가
     @Select("""
-        SELECT s.scene_id, s.social_id, s.theme, s.is_visible,
+        SELECT s.scene_id, s.social_id, s.theme, s.is_message_visible,
                l.location_id, l.latitude, l.longitude
         FROM scene s
         JOIN location l ON s.location_id = l.location_id
@@ -17,7 +17,7 @@ public interface SceneMapper {
             @Result(property = "sceneId", column = "scene_id"),
             @Result(property = "user.socialId", column = "social_id"),
             @Result(property = "theme", column = "theme"),
-            @Result(property = "isVisible", column = "is_visible"),
+            @Result(property = "isMessageVisible", column = "is_message_visible"),
             // Location 매핑 추가
             @Result(property = "location.locationId", column = "location_id"),
             @Result(property = "location.latitude", column = "latitude"),
@@ -26,8 +26,8 @@ public interface SceneMapper {
     Scene findBySceneId(Long sceneId);
 
     // Scene 생성 - Location 참조 추가
-    @Insert("INSERT INTO scene (social_id, location_id, theme, is_visible) " +
-            "VALUES (#{user.socialId}, #{location.locationId}, #{theme}, #{isVisible})")
+    @Insert("INSERT INTO scene (social_id, location_id, theme, is_message_visible) " +
+            "VALUES (#{user.socialId}, #{location.locationId}, #{theme}, #{isMessageVisible})")
     @Options(useGeneratedKeys = true, keyProperty = "sceneId")
     void saveScene(Scene scene);
 
@@ -40,7 +40,7 @@ public interface SceneMapper {
     @Update("""
         UPDATE scene
         SET theme = #{theme},
-            is_visible = #{isVisible}
+            is_message_visible = #{isMessageVisible}
         WHERE scene_id = #{sceneId}
     """)
     void updateScene(Scene scene);
