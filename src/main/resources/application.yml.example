@@ -1,0 +1,48 @@
+# application.yml.example
+# 실제 사용 시 이 파일을 application.yml로 복사하고 필요한 값을 입력하세요.
+
+spring:
+  application:
+    name: raindrop
+  datasource:
+    url: jdbc:mysql://localhost:3306/raindrop
+    username: # MySQL 사용자명을 입력하세요
+    password: # MySQL 비밀번호를 입력하세요
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+  sql:
+    init:
+      mode: always
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    validate-on-migrate: true
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        orm:
+          jdbc:
+            bind: TRACE
+    com:
+      example:
+        demo: DEBUG
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  type-aliases-package: com.example.demo
+  mapper-locations: classpath:mappers/**/*.xml
+
+kakao:
+  client-id: # 카카오 개발자 콘솔에서 발급받은 클라이언트 ID를 입력하세요
+  redirect-uri: http://localhost:5173/auth/login/kakao
+
+jasypt:
+  encryptor:
+    password: # 비밀번호 암호화에 사용할 Jasypt 비밀키를 입력하세요
+    algorithm: PBEWithMD5AndDES
