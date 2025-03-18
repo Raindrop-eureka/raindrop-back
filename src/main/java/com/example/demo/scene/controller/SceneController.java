@@ -5,6 +5,7 @@ import com.example.demo.scene.dto.SceneCreateRequest;
 import com.example.demo.scene.dto.SceneUpdateRequest;
 import com.example.demo.scene.dto.SceneUpdateVisibilityRequest;
 import com.example.demo.scene.service.SceneService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/scenes")
+@Tag(name="Scene", description="scene 테이블")
 public class SceneController {
 
     private final SceneService sceneService;
