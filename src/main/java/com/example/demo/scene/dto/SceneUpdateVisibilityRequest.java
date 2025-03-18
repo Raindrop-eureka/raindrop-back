@@ -7,6 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SceneUpdateVisibilityRequest {
-    @JsonProperty("isVisible")
-    private boolean isVisible;
+    @JsonProperty("isMessageVisible")
+    private boolean isMessageVisible;
 }
