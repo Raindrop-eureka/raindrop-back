@@ -6,6 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class MessageDeleteRequest {
-    private Long sceneId;
+    private String sceneId;
     private Long messageId;
 }
