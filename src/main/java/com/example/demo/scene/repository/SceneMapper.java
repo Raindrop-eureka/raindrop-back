@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.*;
 public interface SceneMapper {
     // Scene 조회 - Location 테이블 조인 추가
     @Select("""
-        SELECT s.scene_id, s.social_id, s.theme, s.is_message_visible,
+        SELECT s.scene_id, s.social_id, s.theme, s.is_message_visible
         FROM scene s
         WHERE s.scene_id = #{sceneId}
     """)

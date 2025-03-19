@@ -5,8 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class MessageCreateRequest {
+public class MessageDeleteRequest {
     private Long sceneId;
-    private String nickname;
-    private String content;
+    private Long messageId;
 }
