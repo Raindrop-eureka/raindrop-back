@@ -10,6 +10,7 @@ import com.example.demo.message.repository.MessageMapper;
 import com.example.demo.scene.domain.Scene;
 import com.example.demo.scene.repository.SceneMapper;
 import com.example.demo.user.service.KakaoAuthService;
+import com.example.demo.utils.AESUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,10 +28,14 @@ public class MessageService {
     private final MessageMapper messageMapper;
     private final SceneMapper sceneMapper;
     private final KakaoAuthService kakaoAuthService;
+    private final AESUtil aesUtil;
 
     // 특정 sceneId의 메시지 리스트 조회
     @Transactional
-    public List<MessageResponse> getMessagesBySceneId(Long sceneId) {
+    public List<MessageResponse> getMessagesBySceneId(String encryptedSceneId) {
+        // 암호화된 sceneId를 복호화
+        Long sceneId = aesUtil.decryptSceneId(encryptedSceneId);  // 복호화된 sceneId 사용
+
         // Scene을 찾고, 해당 sceneId에 맞는 메시지들을 조회
         Scene scene = sceneMapper.findBySceneId(sceneId);
         if (scene == null) {
@@ -55,7 +60,11 @@ public class MessageService {
     // 메시지 생성
     @Transactional
     public Message createMessage(MessageRequest request) {
-        Scene scene = sceneMapper.findBySceneId(request.getSceneId());
+        // sceneId를 복호화
+        Long sceneId = aesUtil.decryptSceneId(request.getSceneId());  // 복호화된 sceneId 사용
+
+
+        Scene scene = sceneMapper.findBySceneId(sceneId);
         if (scene == null) {
             throw new ResourceNotFoundException("Scene not found with ID: " + request.getSceneId());
         }
@@ -78,18 +87,21 @@ public class MessageService {
         // 1. accessToken을 이용해 Kakao 사용자 정보 조회
         String socialId = kakaoAuthService.getUserInfo(accessToken).getKakao_account().getEmail();
 
-        // 2. sceneId에 해당하는 Scene 조회
-        Scene scene = sceneMapper.findBySceneId(request.getSceneId());
+        // 2. 암호화된 sceneId 복호화
+        Long sceneId = aesUtil.decryptSceneId(String.valueOf(request.getSceneId()));  // 복호화된 sceneId 사용
+
+        // 3. sceneId에 해당하는 Scene 조회
+        Scene scene = sceneMapper.findBySceneId(sceneId);
         if (scene == null) {
             throw new ResourceNotFoundException("Scene not found with ID: " + request.getSceneId());
         }
 
-        // 3. social_id 검증 (Scene의 소유자와 요청자가 같은지 확인)
+        // 4. social_id 검증 (Scene의 소유자와 요청자가 같은지 확인)
         if (!scene.getUser().getSocialId().equals(socialId)) {
             throw new UnauthorizedException("You are not the owner of this scene");
         }
 
-        // 4. 메시지 삭제
+        // 5. 메시지 삭제
         messageMapper.deleteMessage(request.getMessageId());
     }
 }
