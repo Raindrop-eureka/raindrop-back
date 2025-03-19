@@ -34,7 +34,7 @@ public class SceneController {
     @Operation(summary = "Scene 수정 (테마 수정)", description = "URL에서 sceneId를 받고 수정할 테마 정보를 RequestBody에서 받아 Scene 테마 수정")
     @PutMapping("/{encryptedSceneId}/theme")  // 암호화된 sceneId
     public ResponseEntity<Scene> updateScene(@PathVariable String encryptedSceneId, @RequestBody SceneUpdateRequest request) {
-        Long sceneId = decryptSceneId(encryptedSceneId);  // 암호화된 sceneId 복호화
+        Long sceneId = aesUtil.decryptSceneId(encryptedSceneId);  // 암호화된 sceneId 복호화
         Scene scene = sceneService.updateScene(sceneId, request);
         return ResponseEntity.ok(scene);
     }
@@ -44,7 +44,7 @@ public class SceneController {
     public ResponseEntity<Scene> updateVisibility(
             @PathVariable String encryptedSceneId,
             @RequestBody SceneUpdateVisibilityRequest request) {
-        Long sceneId = decryptSceneId(encryptedSceneId);  // 암호화된 sceneId 복호화
+        Long sceneId = aesUtil.decryptSceneId(encryptedSceneId);  // 암호화된 sceneId 복호화
         Scene updatedScene = sceneService.updateVisibility(sceneId, request);
         return ResponseEntity.ok(updatedScene);
     }
@@ -52,19 +52,9 @@ public class SceneController {
     @Operation(summary = "Scene 정보 조회", description = "URL에서 sceneId를 받아 해당 Scene 정보를 조회")
     @GetMapping("/{encryptedSceneId}")  // 암호화된 sceneId
     public ResponseEntity<Scene> getScene(@PathVariable String encryptedSceneId) {
-        Long sceneId = decryptSceneId(encryptedSceneId);  // 암호화된 sceneId 복호화
+        Long sceneId = aesUtil.decryptSceneId(encryptedSceneId);  // 암호화된 sceneId 복호화
         Scene scene = sceneService.getScene(sceneId);
         return ResponseEntity.ok(scene);
-    }
-
-    // 암호화된 sceneId를 복호화하는 메서드
-    private Long decryptSceneId(String encryptedSceneId) {
-        try {
-            String decryptedId = aesUtil.decrypt(encryptedSceneId);  // 암호화된 sceneId 복호화
-            return Long.parseLong(decryptedId);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("잘못된 접근입니다. 유효하지 않은 게시판 ID입니다.");
-        }
     }
 
     @Operation(summary = "AccessToken을 받아 암호화된 Scene ID 반환", description = "헤더에서 accessToken을 받아 사용자가 조회할 수 있는 Scene ID를 암호화하여 반환")

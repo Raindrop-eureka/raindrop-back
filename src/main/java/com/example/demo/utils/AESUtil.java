@@ -28,4 +28,14 @@ public class AESUtil {
         String decodedText = new String(Base64.getUrlDecoder().decode(encryptedText));
         return encryptor.decrypt(decodedText);
     }
+
+    // 암호화된 sceneId를 복호화하는 메서드
+    public Long decryptSceneId(String encryptedSceneId) {
+        try {
+            String decryptedId = decrypt(encryptedSceneId);  // 암호화된 sceneId 복호화
+            return Long.parseLong(decryptedId);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("잘못된 접근입니다. 유효하지 않은 게시판 ID입니다.");
+        }
+    }
 }
