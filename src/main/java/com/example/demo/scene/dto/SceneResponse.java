@@ -1,6 +1,7 @@
 package com.example.demo.scene.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.*;
 
 @Getter
@@ -8,7 +9,11 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SceneUpdateVisibilityRequest {
+public class SceneResponse {
+    private Long sceneId;
+    private String theme;
+
     @JsonProperty("isMessageVisible")
     private boolean isMessageVisible;
+    private String ownerSocialId;
 }
