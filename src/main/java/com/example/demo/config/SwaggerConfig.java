@@ -4,8 +4,12 @@ import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.responses.ApiResponses;
+import io.swagger.v3.oas.models.Operation;
+import org.springdoc.core.customizers.OperationCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.method.HandlerMethod;
 
 @Configuration
 public class SwaggerConfig {
@@ -76,5 +80,42 @@ public class SwaggerConfig {
                                         new io.swagger.v3.oas.models.media.MediaType()
                                                 .schema(new Schema<>().$ref(schemaName)))
                 );
+    }
+
+    /**
+     * 글로벌 예외 처리와 Swagger 충돌 해결을 위한 OperationCustomizer
+     * - 각 API 엔드포인트에 공통 응답을 적용합니다
+     */
+    @Bean
+    public OperationCustomizer customGlobalResponseCustomizer() {
+        return (Operation operation, HandlerMethod handlerMethod) -> {
+            // 기존 응답이 없으면 새로 생성
+            ApiResponses responses = operation.getResponses();
+            if (responses == null) {
+                responses = new ApiResponses();
+                operation.setResponses(responses);
+            }
+
+            // 4xx 에러에 대한 공통 응답 등록
+            if (!responses.containsKey("400")) {
+                responses.addApiResponse("400", new io.swagger.v3.oas.models.responses.ApiResponse().$ref("BadRequest"));
+            }
+            if (!responses.containsKey("401")) {
+                responses.addApiResponse("401", new io.swagger.v3.oas.models.responses.ApiResponse().$ref("Unauthorized"));
+            }
+            if (!responses.containsKey("403")) {
+                responses.addApiResponse("403", new io.swagger.v3.oas.models.responses.ApiResponse().$ref("Forbidden"));
+            }
+            if (!responses.containsKey("404")) {
+                responses.addApiResponse("404", new io.swagger.v3.oas.models.responses.ApiResponse().$ref("NotFound"));
+            }
+
+            // 5xx 에러에 대한 공통 응답 등록
+            if (!responses.containsKey("500")) {
+                responses.addApiResponse("500", new io.swagger.v3.oas.models.responses.ApiResponse().$ref("ServerError"));
+            }
+
+            return operation;
+        };
     }
 }

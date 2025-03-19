@@ -49,7 +49,7 @@ public class MessageController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "서버 오류",
                     content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
-    public ResponseEntity<ApiResponse<List<MessageResponse>>> getMessagesBySceneId(@RequestParam Long scene) {
+    public ResponseEntity<ApiResponse<List<MessageResponse>>> getMessagesBySceneId(@RequestParam String scene) {
         List<MessageResponse> responses = messageService.getMessagesBySceneId(scene);
         return ResponseEntity.ok(ApiResponse.success(responses));
     }

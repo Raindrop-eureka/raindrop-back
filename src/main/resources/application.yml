@@ -36,7 +36,7 @@ mybatis:
   mapper-locations: classpath:mappers/**/*.xml
 
 kakao:
-  client-id: # 카카오 개발자 콘솔에서 발급받은 클라이언트 ID를 입력하세요
+  client-id: 8162b95c200bcd82ce88d8c5468f41c5
   redirect-uri: http://localhost:5173/auth/login/kakao
 
 jasypt:
