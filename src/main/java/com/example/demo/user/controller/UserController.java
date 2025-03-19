@@ -1,6 +1,7 @@
 package com.example.demo.user.controller;
 
 import com.example.demo.user.dto.*;
+import com.example.demo.user.service.KakaoAuthService;
 import com.example.demo.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,18 +17,19 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name="User",description = "사용자 정보")
 public class UserController {
     private final UserService userService;
+    private final KakaoAuthService kakaoAuthService;
 
     @Operation(summary = "accessToken 발급", description = "code로 accessToken을 발급받아 카카오 로그인 처리")
     @PostMapping("/login")
     public ResponseEntity<KakaoAuthResponse> login(@RequestBody KakaoLoginRequest request) {
-        KakaoAuthResponse response = userService.login(request);
+        KakaoAuthResponse response = kakaoAuthService.getAccessToken(request.getCode());
         return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "token 갱신", description = "refresh-token으로 만료된 access-token과 refresh-token을 갱신해 재발급")
     @PostMapping("/refresh")
-    public ResponseEntity<KakaoAuthResponse> getRefreshToken(@RequestHeader("refresh-token") String refreshToken) {
-        KakaoAuthResponse response = userService.refreshToken(refreshToken);
+    public ResponseEntity<KakaoAuthResponse> refresh(@RequestParam String refreshToken) {
+        KakaoAuthResponse response = kakaoAuthService.refreshToken(refreshToken);
         return ResponseEntity.ok(response);
     }
 
