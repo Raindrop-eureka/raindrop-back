@@ -1,11 +1,15 @@
 package com.example.demo.message.controller;
 
+import com.example.demo.common.dto.ApiResponse;
 import com.example.demo.message.domain.Message;
 import com.example.demo.message.dto.MessageDeleteRequest;
 import com.example.demo.message.dto.MessageRequest;
 import com.example.demo.message.dto.MessageResponse;
 import com.example.demo.message.service.MessageService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,26 +27,49 @@ public class MessageController {
 
     @PostMapping
     @Operation(summary = "메세지 추가", description = "특정 scene에 message를 추가")
-    public ResponseEntity<Void> saveMessage(@RequestBody MessageRequest request) {
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "씬을 찾을 수 없음",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "서버 오류",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class)))
+    })
+    public ResponseEntity<ApiResponse<Void>> saveMessage(@RequestBody MessageRequest request) {
         messageService.createMessage(request);
-        return ResponseEntity.ok().build();  // 성공 시 200 응답
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
 
     // 특정 sceneId의 모든 메시지 조회 (쿼리 파라미터 방식)
     @GetMapping
     @Operation(summary = "메세지 조회", description = "특정 scene의 message를 조회")
-    public ResponseEntity<List<MessageResponse>> getMessagesBySceneId(@RequestParam Long scene) {
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "씬을 찾을 수 없거나 메시지가 없음",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "서버 오류",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class)))
+    })
+    public ResponseEntity<ApiResponse<List<MessageResponse>>> getMessagesBySceneId(@RequestParam Long scene) {
         List<MessageResponse> responses = messageService.getMessagesBySceneId(scene);
-        return ResponseEntity.ok(responses);
+        return ResponseEntity.ok(ApiResponse.success(responses));
     }
 
     @DeleteMapping
     @Operation(summary = "메세지 삭제", description = "scene 소유자가 특정 message를 삭제")
-    public ResponseEntity<Void> deleteMessage(
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증 실패 또는 권한 없음",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "씬을 찾을 수 없음",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "서버 오류",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class)))
+    })
+    public ResponseEntity<ApiResponse<Void>> deleteMessage(
             @RequestHeader("access-token") String accessToken,
             @RequestBody MessageDeleteRequest request) {
 
         messageService.deleteMessage(accessToken, request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
 }

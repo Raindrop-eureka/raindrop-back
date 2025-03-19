@@ -1,5 +1,7 @@
 package com.example.demo.message.service;
 
+import com.example.demo.common.exception.ResourceNotFoundException;
+import com.example.demo.common.exception.UnauthorizedException;
 import com.example.demo.message.domain.Message;
 import com.example.demo.message.dto.MessageDeleteRequest;
 import com.example.demo.message.dto.MessageRequest;
@@ -30,9 +32,14 @@ public class MessageService {
     @Transactional
     public List<MessageResponse> getMessagesBySceneId(Long sceneId) {
         // Scene을 찾고, 해당 sceneId에 맞는 메시지들을 조회
+        Scene scene = sceneMapper.findBySceneId(sceneId);
+        if (scene == null) {
+            throw new ResourceNotFoundException("Scene not found with ID: " + sceneId);
+        }
+
         List<Message> messages = messageMapper.findMessagesBySceneId(sceneId);
         if (messages == null || messages.isEmpty()) {
-            throw new IllegalArgumentException("No messages found for this scene");
+            throw new ResourceNotFoundException("No messages found for this scene");
         }
 
         // 메시지들을 MessageResponse로 변환하여 반환
@@ -50,7 +57,7 @@ public class MessageService {
     public Message createMessage(MessageRequest request) {
         Scene scene = sceneMapper.findBySceneId(request.getSceneId());
         if (scene == null) {
-            throw new IllegalArgumentException("Scene not found");
+            throw new ResourceNotFoundException("Scene not found with ID: " + request.getSceneId());
         }
 
         Message message = Message.builder()
@@ -74,12 +81,12 @@ public class MessageService {
         // 2. sceneId에 해당하는 Scene 조회
         Scene scene = sceneMapper.findBySceneId(request.getSceneId());
         if (scene == null) {
-            throw new IllegalArgumentException("Scene not found");
+            throw new ResourceNotFoundException("Scene not found with ID: " + request.getSceneId());
         }
 
         // 3. social_id 검증 (Scene의 소유자와 요청자가 같은지 확인)
         if (!scene.getUser().getSocialId().equals(socialId)) {
-            throw new IllegalArgumentException("Unauthorized: You are not the owner of this scene.");
+            throw new UnauthorizedException("You are not the owner of this scene");
         }
 
         // 4. 메시지 삭제
