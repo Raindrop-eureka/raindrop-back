@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS scene CASCADE;
+
 CREATE TABLE scene (
                        scene_id BIGINT AUTO_INCREMENT NOT NULL,
                        social_id VARCHAR(255) NOT NULL,

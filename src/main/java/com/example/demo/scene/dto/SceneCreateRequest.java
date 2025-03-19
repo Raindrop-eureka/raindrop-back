@@ -9,6 +9,4 @@ public class SceneCreateRequest {
 
     private String socialId;
     private String theme;
-    private Double latitude;
-    private Double longitude;
 }

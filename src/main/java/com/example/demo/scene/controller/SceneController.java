@@ -20,7 +20,7 @@ public class SceneController {
 
     private final SceneService sceneService;
 
-    @Operation(summary = "Scene 생성", description = "사용자의 socialId, 위도, 경도를 받아 Scene을 생성")
+    @Operation(summary = "Scene 생성", description = "사용자의 socialId와 theme를 받아 Scene을 생성")
     @PostMapping
     public ResponseEntity<Scene> createScene(@RequestBody SceneCreateRequest request) {
         Scene scene = sceneService.createScene(request);

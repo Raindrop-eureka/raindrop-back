@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS location CASCADE;
+
 CREATE TABLE location (
                           location_id BIGINT AUTO_INCREMENT NOT NULL,
                           latitude DOUBLE NOT NULL,

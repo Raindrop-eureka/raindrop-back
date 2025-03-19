@@ -1,4 +1,0 @@
-CREATE TABLE IF NOT EXISTS user (
-    social_id VARCHAR(255) NOT NULL PRIMARY KEY,  -- social_id를 PRIMARY KEY로 설정
-    name VARCHAR(255) NOT NULL
-);
