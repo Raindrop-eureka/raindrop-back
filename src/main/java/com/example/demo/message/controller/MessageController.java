@@ -1,6 +1,7 @@
 package com.example.demo.message.controller;
 
 import com.example.demo.message.domain.Message;
+import com.example.demo.message.dto.MessageDeleteRequest;
 import com.example.demo.message.dto.MessageRequest;
 import com.example.demo.message.dto.MessageResponse;
 import com.example.demo.message.service.MessageService;
@@ -33,5 +34,15 @@ public class MessageController {
     public ResponseEntity<List<MessageResponse>> getMessagesBySceneId(@RequestParam Long scene) {
         List<MessageResponse> responses = messageService.getMessagesBySceneId(scene);
         return ResponseEntity.ok(responses);
+    }
+
+    @DeleteMapping
+    @Operation(summary = "메세지 삭제", description = "scene 소유자가 특정 message를 삭제")
+    public ResponseEntity<Void> deleteMessage(
+            @RequestHeader("access-token") String accessToken,
+            @RequestBody MessageDeleteRequest request) {
+
+        messageService.deleteMessage(accessToken, request);
+        return ResponseEntity.ok().build();
     }
 }
