@@ -38,4 +38,18 @@ public interface SceneMapper {
         WHERE scene_id = #{sceneId}
     """)
     void updateScene(Scene scene);
+
+    // Scene 조회 - socialId 기반으로 Scene 찾기
+    @Select("""
+        SELECT s.scene_id, s.social_id, s.theme, s.is_message_visible
+        FROM scene s
+        WHERE s.social_id = #{socialId}
+    """)
+    @Results({
+            @Result(property = "sceneId", column = "scene_id"),
+            @Result(property = "user.socialId", column = "social_id"),
+            @Result(property = "theme", column = "theme"),
+            @Result(property = "isMessageVisible", column = "is_message_visible"),
+    })
+    Scene findBySocialId(String socialId);
 }

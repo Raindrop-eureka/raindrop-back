@@ -31,7 +31,7 @@ public class MessageController {
     // 특정 sceneId의 모든 메시지 조회 (쿼리 파라미터 방식)
     @GetMapping
     @Operation(summary = "메세지 조회", description = "특정 scene의 message를 조회")
-    public ResponseEntity<List<MessageResponse>> getMessagesBySceneId(@RequestParam Long scene) {
+    public ResponseEntity<List<MessageResponse>> getMessagesBySceneId(@RequestParam String scene) {
         List<MessageResponse> responses = messageService.getMessagesBySceneId(scene);
         return ResponseEntity.ok(responses);
     }

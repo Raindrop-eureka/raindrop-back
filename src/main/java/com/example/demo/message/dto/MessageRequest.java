@@ -6,7 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class MessageRequest {
-    private Long sceneId;
+    private String sceneId;
     private String nickname;
     private String content;
 }
