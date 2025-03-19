@@ -31,7 +31,6 @@ public class SceneController {
 
         Long sceneId = sceneService.createScene(accessToken, request);
         String encryptedSceneId = aesUtil.encrypt(String.valueOf(sceneId));
-
         return ResponseEntity.status(HttpStatus.CREATED).body(encryptedSceneId);
     }
 
@@ -39,9 +38,7 @@ public class SceneController {
     @PutMapping("/theme")  // 암호화된 sceneId
     public ResponseEntity<Void> updateScene(
             @RequestHeader("access-token") String accessToken,
-            // @PathVariable String encryptedSceneId,
             @RequestBody SceneRequest request) {
-        // Long sceneId = aesUtil.decryptSceneId(encryptedSceneId);  // 암호화된 sceneId 복호화
         sceneService.updateScene(accessToken, request);
         return ResponseEntity.ok().build();
     }
@@ -50,9 +47,7 @@ public class SceneController {
     @PutMapping("/visibility")  // 암호화된 sceneId
     public ResponseEntity<Void> updateVisibility(
             @RequestHeader("access-token") String accessToken,
-            // @PathVariable String encryptedSceneId,
             @RequestBody SceneUpdateVisibilityRequest request) {
-        // Long sceneId = aesUtil.decryptSceneId(encryptedSceneId);  // 암호화된 sceneId 복호화
         sceneService.updateVisibility(accessToken, request);
         return ResponseEntity.ok().build();
     }
@@ -61,20 +56,18 @@ public class SceneController {
     @GetMapping("/{encryptedSceneId}")
     public ResponseEntity<SceneResponse> getScene(
             @PathVariable String encryptedSceneId) {
-        Long sceneId = aesUtil.decryptSceneId(encryptedSceneId);  // 암호화된 sceneId 복호화
+        Long sceneId = aesUtil.decryptSceneId(encryptedSceneId);
         SceneResponse response = sceneService.getScene(sceneId);
         return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "AccessToken을 받아 암호화된 Scene ID 반환", description = "헤더에서 accessToken을 받아 사용자가 조회할 수 있는 Scene ID를 암호화하여 반환")
-    @GetMapping("/id")
+    @GetMapping
     public ResponseEntity<String> getEncryptedSceneId(@RequestHeader("access-token") String accessToken) {
         String socialId = kakaoAuthService.getUserInfo(accessToken).getKakao_account().getEmail();
 
-        // socialId를 통해 해당 Scene 조회
         Long sceneId = sceneService.getSceneIdBySocialId(socialId);
 
-        // sceneId 암호화
         String encryptedSceneId = aesUtil.encrypt(String.valueOf(sceneId));
 
         return ResponseEntity.ok(encryptedSceneId);
