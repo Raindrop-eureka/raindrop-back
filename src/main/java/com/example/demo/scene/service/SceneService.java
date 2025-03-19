@@ -24,7 +24,7 @@ public class SceneService {
 
     // SCENE 생성
     @Transactional
-    public void createScene(String accessToken, SceneRequest request) {
+    public Long createScene(String accessToken, SceneRequest request) {
         String socialId = kakaoAuthService.getUserInfo(accessToken).getKakao_account().getEmail();
 
         User user = userMapper.findBySocialId(socialId);
@@ -39,20 +39,17 @@ public class SceneService {
                 .build();
 
         sceneMapper.saveScene(scene);
+        return scene.getSceneId();
     }
 
     // SCENE 수정
     @Transactional
-    public void updateScene(String accessToken, Long sceneId, SceneRequest request) {
+    public void updateScene(String accessToken, SceneRequest request) {
         String socialId = kakaoAuthService.getUserInfo(accessToken).getKakao_account().getEmail();
 
-        Scene scene = sceneMapper.findBySceneId(sceneId);
+        Scene scene = sceneMapper.findBySocialId(socialId);
         if (scene == null) {
             throw new IllegalArgumentException("Scene not found");
-        }
-
-        if (!scene.getUser().getSocialId().equals(socialId)) {
-            throw new IllegalArgumentException("Unauthorized: You are not the owner of this scene.");
         }
 
         scene.setTheme(request.getTheme());
@@ -61,16 +58,12 @@ public class SceneService {
 
     // SCENE 공개 설정 수정
     @Transactional
-    public void updateVisibility(String accessToken, Long sceneId, SceneUpdateVisibilityRequest request) {
+    public void updateVisibility(String accessToken, SceneUpdateVisibilityRequest request) {
         String socialId = kakaoAuthService.getUserInfo(accessToken).getKakao_account().getEmail();
 
-        Scene scene = sceneMapper.findBySceneId(sceneId);
+        Scene scene = sceneMapper.findBySocialId(socialId);
         if (scene == null) {
             throw new IllegalArgumentException("Scene not found");
-        }
-
-        if (!scene.getUser().getSocialId().equals(socialId)) {
-            throw new IllegalArgumentException("Unauthorized: You are not the owner of this scene.");
         }
 
         scene.setMessageVisible(request.isMessageVisible());
@@ -79,16 +72,10 @@ public class SceneService {
 
     // SCENE 조회
     @Transactional(readOnly = true)
-    public SceneResponse getScene(String accessToken, Long sceneId) {
-        String socialId = kakaoAuthService.getUserInfo(accessToken).getKakao_account().getEmail();
-
+    public SceneResponse getScene(Long sceneId) {
         Scene scene = sceneMapper.findBySceneId(sceneId);
         if (scene == null) {
             throw new IllegalArgumentException("Scene not found");
-        }
-
-        if (!scene.getUser().getSocialId().equals(socialId)) {
-            throw new IllegalArgumentException("Unauthorized: This scene is private.");
         }
 
         return SceneResponse.builder()
