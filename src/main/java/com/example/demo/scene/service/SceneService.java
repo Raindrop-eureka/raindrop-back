@@ -98,4 +98,14 @@ public class SceneService {
                 .ownerSocialId(scene.getUser().getSocialId())
                 .build();
     }
+
+    // socialId로 Scene을 찾아서 sceneId 반환
+    public Long getSceneIdBySocialId(String socialId) {
+        Scene scene = sceneMapper.findBySocialId(socialId);  // socialId 기반으로 Scene 조회
+        if (scene != null) {
+            return scene.getSceneId();
+        } else {
+            throw new IllegalArgumentException("해당 socialId에 맞는 Scene을 찾을 수 없습니다.");
+        }
+    }
 }
