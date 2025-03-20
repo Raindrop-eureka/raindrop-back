@@ -34,7 +34,14 @@ jobs:
           distribution: 'corretto'
 
       - name: Set artifact
-        run: echo "artifact=$(ls ./build/libs)" >> $GITHUB_ENV
+        run: |
+          ARTIFACT=$(find build/libs -name "*.jar" | head -n 1)
+          if [[ -z "$ARTIFACT" ]]; then
+            echo "❌ JAR file not found! Check Gradle build logs."
+            exit 1
+          fi
+          echo "✅ JAR file found: $ARTIFACT"
+          echo "artifact=$ARTIFACT" >> $GITHUB_ENV
 
       - name: Beanstalk Deploy
         uses: einaregilsson/beanstalk-deploy@v20
