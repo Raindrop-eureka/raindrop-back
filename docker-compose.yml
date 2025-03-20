@@ -11,9 +11,9 @@ services:
       - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=prod
-      - SPRING_DATASOURCE_URL=jdbc:mysql://awseb-e-ecg3kypfda-stack-awsebrdsdatabase-zuhgc1zbkxb6.crg688g4kko4.ap-northeast-2.rds.amazonaws.com:3306/raindrop
-      - SPRING_DATASOURCE_USERNAME=raindrop
-      - SPRING_DATASOURCE_PASSWORD=raindropeureka
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
     volumes:
       # 호스트의 application.yml.example을 컨테이너의 application.yml로 마운트
       - ./src/main/resources/application.yml.example:/app/src/main/resources/application.yml
