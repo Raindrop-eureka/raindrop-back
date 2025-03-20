@@ -15,12 +15,7 @@ jobs:
           sudo chmod +x /usr/local/bin/docker-compose
 
       - name: Get current time
-        uses: josStorer.get-current-time@v2.0.2
-        id: current-time
-        with:
-          format: YYYY-MM-DDTHH-mm-ss
-          utcOffset: "+09:00"
-
+        run: echo "CURRENT_TIME=$(date +'%Y-%m-%dT%H-%M-%S')" >> $GITHUB_ENV
 
       - name: Build and Deploy with Docker Compose
         env:
@@ -39,7 +34,9 @@ jobs:
           distribution: 'corretto'
 
       - name: Set artifact
-        run: echo "artifact=$(ls ./build/libs)" >> $GITHUB_ENV
+        run: |
+          ARTIFACT=$(ls ./build/libs/*.jar | head -n 1)
+          echo "artifact=$ARTIFACT" >> $GITHUB_ENV
 
       - name: Beanstalk Deploy
         uses: einaregilsson/beanstalk-deploy@v20
@@ -48,7 +45,7 @@ jobs:
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: springboot-developer
           environment_name: Springboot-developer-env
-          version_label: github-action-${{steps.current-time.outputs.formattedTime}}
+          version_label: github-action-${{ env.CURRENT_TIME }}
           region: ap-northeast-2
           deployment_package: ${{ env.artifact }}
 
