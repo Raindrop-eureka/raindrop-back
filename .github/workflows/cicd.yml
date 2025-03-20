@@ -1,4 +1,4 @@
-name: CI
+name: CI/CD
 on:
   push:
     branches: [ main ]
@@ -14,6 +14,14 @@ jobs:
           sudo curl -L "https://github.com/docker/compose/releases/download/v2.22.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           sudo chmod +x /usr/local/bin/docker-compose
 
+      - name: Get current time
+        uses: josStorer.get-current-time@v2.0.2
+        id: current-time
+        with:
+          format: YYYY-MM-DDTHH-mm-ss
+          utcOffset: "+09:00"
+
+
       - name: Build and Deploy with Docker Compose
         env:
           SPRING_PROFILES_ACTIVE: prod
@@ -24,6 +32,25 @@ jobs:
           docker-compose down || true
           docker-compose build
           docker-compose up -d
+
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'corretto'
+
+      - name: Set artifact
+        run: echo "artifact=$(ls ./build/libs)" >> $GITHUB_ENV
+
+      - name: Beanstalk Deploy
+        uses: einaregilsson/beanstalk-deploy@v20
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: springboot-developer
+          environment_name: Springboot-developer-env
+          version_label: github-action-${{steps.current-time.outputs.formattedTime}}
+          region: ap-northeast-2
+          deployment_package: ${{ env.artifact }}
 
       - name: Check Container Status
         run: docker-compose ps
