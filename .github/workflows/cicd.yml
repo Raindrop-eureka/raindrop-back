@@ -17,6 +17,12 @@ jobs:
       - name: Get current time
         run: echo "CURRENT_TIME=$(date +'%Y-%m-%dT%H-%M-%S')" >> $GITHUB_ENV
 
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew clean build -x test
+
       - name: Build and Deploy with Docker Compose
         env:
           SPRING_PROFILES_ACTIVE: prod
@@ -28,20 +34,21 @@ jobs:
           docker-compose build
           docker-compose up -d
 
+      - name: Copy artifact from container
+        run: docker cp $(docker ps -q -f name=raindrop-app):/artifact/demo.jar ./build/libs/
+
+
       - uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'corretto'
 
+
       - name: Set artifact
         run: |
           ARTIFACT=$(find build/libs -name "*.jar" | head -n 1)
-          if [[ -z "$ARTIFACT" ]]; then
-            echo "❌ JAR file not found! Check Gradle build logs."
-            exit 1
-          fi
-          echo "✅ JAR file found: $ARTIFACT"
           echo "artifact=$ARTIFACT" >> $GITHUB_ENV
+    
 
       - name: Beanstalk Deploy
         uses: einaregilsson/beanstalk-deploy@v20
