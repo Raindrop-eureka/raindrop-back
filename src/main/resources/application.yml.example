@@ -1,0 +1,48 @@
+# application.yml.example
+# 실제 사용 시 이 파일을 application.yml로 복사하고 필요한 값을 입력하세요.
+
+spring:
+  application:
+    name: raindrop
+  datasource:
+    url: jdbc:mysql://awseb-e-ecg3kypfda-stack-awsebrdsdatabase-zuhgc1zbkxb6.crg688g4kko4.ap-northeast-2.rds.amazonaws.com/raindrop
+    username:
+    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+  sql:
+    init:
+      mode: always
+  flyway:
+    enabled: false
+    locations: classpath:db/migration
+    validate-on-migrate: true
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        orm:
+          jdbc:
+            bind: TRACE
+    com:
+      example:
+        demo: DEBUG
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  type-aliases-package: com.example.demo
+  mapper-locations: classpath:mappers/**/*.xml
+
+kakao:
+  client-id:
+  redirect-uri: http://localhost:5173/auth/login/kakao
+
+jasypt:
+  encryptor:
+    password:
+    algorithm: PBEWithMD5AndDES

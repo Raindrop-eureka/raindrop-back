@@ -5,20 +5,51 @@ import org.apache.ibatis.annotations.*;
 
 @Mapper
 public interface SceneMapper {
-
-    @Select("SELECT scene_id, social_id, theme, latitude, longitude, is_visible " +
-            "FROM scene WHERE scene_id = #{sceneId}")
+    // Scene 조회 - Location 테이블 조인 추가
+    @Select("""
+        SELECT s.scene_id, s.social_id, s.theme, s.is_message_visible
+        FROM scene s
+        WHERE s.scene_id = #{sceneId}
+    """)
+    @Results({
+            @Result(property = "sceneId", column = "scene_id"),
+            @Result(property = "user.socialId", column = "social_id"),
+            @Result(property = "theme", column = "theme"),
+            @Result(property = "isMessageVisible", column = "is_message_visible"),
+    })
     Scene findBySceneId(Long sceneId);
 
-    @Insert("INSERT INTO scene (social_id, theme, latitude, longitude, is_visible) " +
-            "VALUES (#{user.socialId}, #{theme}, #{latitude}, #{longitude}, #{isVisible})")
-    @Options(useGeneratedKeys = true, keyProperty = "sceneId")  // sceneId를 자동으로 설정
+    // Scene 생성 - Location 참조 추가
+    @Insert("INSERT INTO scene (social_id, theme, is_message_visible) " +
+            "VALUES (#{user.socialId}, #{theme}, #{isMessageVisible})")
+    @Options(useGeneratedKeys = true, keyProperty = "sceneId")
     void saveScene(Scene scene);
 
+
+    // Scene 삭제
     @Delete("DELETE FROM scene WHERE scene_id = #{sceneId}")
     void deleteScene(Long sceneId);
 
-    @Update("UPDATE scene SET theme = #{theme}, latitude = #{latitude}, longitude = #{longitude}, " +
-            "is_visible = #{isVisible} WHERE scene_id = #{sceneId}")
+    // Scene 수정
+    @Update("""
+        UPDATE scene
+        SET theme = #{theme},
+            is_message_visible = #{isMessageVisible}
+        WHERE scene_id = #{sceneId}
+    """)
     void updateScene(Scene scene);
+
+    // Scene 조회 - socialId 기반으로 Scene 찾기
+    @Select("""
+        SELECT s.scene_id, s.social_id, s.theme, s.is_message_visible
+        FROM scene s
+        WHERE s.social_id = #{socialId}
+    """)
+    @Results({
+            @Result(property = "sceneId", column = "scene_id"),
+            @Result(property = "user.socialId", column = "social_id"),
+            @Result(property = "theme", column = "theme"),
+            @Result(property = "isMessageVisible", column = "is_message_visible"),
+    })
+    Scene findBySocialId(String socialId);
 }
