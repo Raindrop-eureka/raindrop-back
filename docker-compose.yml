@@ -16,3 +16,7 @@ services:
       - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
       - KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID}
       - JASYPT_ENCRYPTOR_PASSWORD=${JASYPT_ENCRYPTOR_PASSWORD}
+    volumes:
+      - ./logs:app/logs
+    env_file:
+      - .env
