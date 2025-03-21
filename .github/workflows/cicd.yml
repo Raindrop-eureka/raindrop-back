@@ -47,10 +47,8 @@ jobs:
 
       - name: Set artifact path
         run: |
-          CONTAINER_ID=$(docker ps -qf "name=raindrop-app")
-          ARTIFACT=$(docker exec $CONTAINER_ID sh -c "find /app/build/libs -name '*.jar' | head -n 1")
+          ARTIFACT=$(find ./build/libs -name "*.jar" | head -n 1)
           echo "artifact=$ARTIFACT" >> $GITHUB_ENV
-          echo "ARTIFACT FOUND: $ARTIFACT"
 
       - name: Beanstalk Deploy
         uses: einaregilsson/beanstalk-deploy@v20
