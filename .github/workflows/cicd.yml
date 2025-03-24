@@ -44,7 +44,8 @@ jobs:
           echo "KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}" >> .env
           echo "JASYPT_ENCRYPTOR_PASSWORD=${{ secrets.JASYPT_ENCRYPTOR_PASSWORD }}" >> .env
           echo "AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID }}" >> .env
-          echo "AWS_REGION=ap-northeast-2" >> .env
+          echo "AWS_REGION=${{secrets.AWS_REGION}}" >> .env
+          echo "SPRING_FLYWAY_BASELINE_ON_MIGRATE=true" >> .env
           echo "CURRENT_TIME=${{ env.CURRENT_TIME }}" >> .env
 
       - name: Create ECR repository if not exists
