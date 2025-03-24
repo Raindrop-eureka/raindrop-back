@@ -43,7 +43,7 @@ jobs:
           echo "SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }}" >> .env
           echo "KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}" >> .env
           echo "JASYPT_ENCRYPTOR_PASSWORD=${{ secrets.JASYPT_ENCRYPTOR_PASSWORD }}" >> .env
-          echo "AWS_ACCOUNT_ID=${{ steps.login-ecr.outputs.account }}" >> .env
+          echo "AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID }}" >> .env
           echo "AWS_REGION=ap-northeast-2" >> .env
 
       # ECR 저장소 생성 (없는 경우)
@@ -65,7 +65,7 @@ jobs:
       # Dockerrun.aws.json 파일 업데이트
       - name: Update Dockerrun.aws.json
         env:
-          AWS_ACCOUNT_ID: ${{ steps.login-ecr.outputs.account }}
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
         run: |
           sed -i "s/%AWS_ACCOUNT_ID%/$AWS_ACCOUNT_ID/g" Dockerrun.aws.json
           sed -i "s/%AWS_REGION%/ap-northeast-2/g" Dockerrun.aws.json
@@ -89,4 +89,4 @@ jobs:
           region: ap-northeast-2
           deployment_package: deploy.zip
           wait_for_environment_recovery: 300
-          use_existing_version_if_available: false
+          use_existing_version_if_available: true
