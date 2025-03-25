@@ -41,11 +41,14 @@ jobs:
           echo "SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }}" >> .env
           echo "SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }}" >> .env
           echo "SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }}" >> .env
+          echo "SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver" >> .env
+          echo "SPRING_H2_CONSOLE_ENABLED=false" >> .env
           echo "KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}" >> .env
           echo "JASYPT_ENCRYPTOR_PASSWORD=${{ secrets.JASYPT_ENCRYPTOR_PASSWORD }}" >> .env
           echo "AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID }}" >> .env
           echo "AWS_REGION=${{secrets.AWS_REGION}}" >> .env
           echo "SPRING_FLYWAY_BASELINE_ON_MIGRATE=true" >> .env
+          echo "SPRING_FLYWAY_LOCATIONS=classpath:db/migration" >> .env
           echo "CURRENT_TIME=${{ env.CURRENT_TIME }}" >> .env
 
       - name: Create ECR repository if not exists
