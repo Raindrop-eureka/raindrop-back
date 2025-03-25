@@ -74,7 +74,7 @@ jobs:
       - name: Generate deployment package
         run: |
           mkdir -p .platform/nginx/conf.d/
-          touch .platform/nginx/conf.d/.keep
+          echo "$(cat proxy.conf)" > .platform/nginx/conf.d/custom.conf
           cp ./build/libs/demo-0.0.1-SNAPSHOT.jar ./app.jar
           zip -r deploy.zip Dockerrun.aws.json .platform .ebextensions .env app.jar Procfile
 

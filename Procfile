@@ -1,1 +1,1 @@
-web: java -jar app.jar
+web: java -Xms512m -Xmx1024m -jar app.jar
