@@ -25,7 +25,7 @@ FROM eclipse-temurin:17-jre
 WORKDIR /app
 
 # 8. 빌드된 JAR 파일 복사
-COPY --from=build /app/build/libs/demo-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build /app/build/libs/demo-0.0.1-SNAPSHOT.jar /app/app.jar
 
 # 10. 실행 명령 설정
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]

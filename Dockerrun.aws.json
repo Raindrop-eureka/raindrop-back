@@ -1,13 +1,13 @@
 {
   "AWSEBDockerrunVersion": "1",
   "Image": {
-    "Name": "533267037772.dkr.ecr.ap-northeast-2.amazonaws.com/raindrop-app:latest",
+    "Name": "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/raindrop-app:latest",
     "Update": "true"
   },
   "Ports": [
     {
-      "ContainerPort": "8080",
-      "HostPort": "80"
+      "ContainerPort": 8080,
+      "HostPort": 5000
     }
   ],
   "Volumes": [

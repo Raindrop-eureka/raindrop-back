@@ -3,12 +3,12 @@ version: '3.8'
 services:
   app:
     container_name: raindrop-app
-    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/raindrop-app:latest
+    image: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/raindrop-app:latest"
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "80:8080"
+      - "5000:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
       - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
