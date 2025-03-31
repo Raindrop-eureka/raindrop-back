@@ -5,7 +5,7 @@ import org.apache.ibatis.annotations.*;
 
 @Mapper
 public interface SceneMapper {
-    // Scene 조회 - Location 테이블 조인 추가
+    // Scene 조회 - scene_id 기준
     @Select("""
         SELECT s.scene_id, s.social_id, s.theme, s.is_message_visible
         FROM scene s
@@ -19,12 +19,11 @@ public interface SceneMapper {
     })
     Scene findBySceneId(Long sceneId);
 
-    // Scene 생성 - Location 참조 추가
+    // Scene 생성 - JDBC 타입 명시하여 NULL 문제 방지
     @Insert("INSERT INTO scene (social_id, theme, is_message_visible) " +
-            "VALUES (#{user.socialId}, #{theme}, #{isMessageVisible})")
+            "VALUES (#{user.socialId, jdbcType=VARCHAR}, #{theme, jdbcType=VARCHAR}, #{isMessageVisible, jdbcType=BOOLEAN})")
     @Options(useGeneratedKeys = true, keyProperty = "sceneId")
     void saveScene(Scene scene);
-
 
     // Scene 삭제
     @Delete("DELETE FROM scene WHERE scene_id = #{sceneId}")
@@ -33,8 +32,8 @@ public interface SceneMapper {
     // Scene 수정
     @Update("""
         UPDATE scene
-        SET theme = #{theme},
-            is_message_visible = #{isMessageVisible}
+        SET theme = #{theme, jdbcType=VARCHAR},
+            is_message_visible = #{isMessageVisible, jdbcType=BOOLEAN}
         WHERE scene_id = #{sceneId}
     """)
     void updateScene(Scene scene);
