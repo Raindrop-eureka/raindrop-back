@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Builder
-public class ApiResponse<T> {
+public class ApiResponseDTO<T> {
     private boolean success;
     private String message;
     private String code;
@@ -18,8 +18,8 @@ public class ApiResponse<T> {
     private LocalDateTime timestamp;
 
     // 성공 응답 생성 메서드
-    public static <T> ApiResponse<T> success(T data) {
-        return ApiResponse.<T>builder()
+    public static <T> ApiResponseDTO<T> success(T data) {
+        return ApiResponseDTO.<T>builder()
                 .success(true)
                 .message("Success")
                 .code("S000") // 성공 코드
@@ -29,8 +29,8 @@ public class ApiResponse<T> {
     }
 
     // 실패 응답 생성 메서드
-    public static <T> ApiResponse<T> error(String message) {
-        return ApiResponse.<T>builder()
+    public static <T> ApiResponseDTO<T> error(String message) {
+        return ApiResponseDTO.<T>builder()
                 .success(false)
                 .message(message)
                 .code("E999") // 기본 에러 코드
@@ -40,8 +40,8 @@ public class ApiResponse<T> {
     }
 
     // ErrorCode를 사용하는 에러 응답 생성 메서드
-    public static <T> ApiResponse<T> error(String message, String code) {
-        return ApiResponse.<T>builder()
+    public static <T> ApiResponseDTO<T> error(String message, String code) {
+        return ApiResponseDTO.<T>builder()
                 .success(false)
                 .message(message)
                 .code(code)
@@ -51,8 +51,8 @@ public class ApiResponse<T> {
     }
 
     // ErrorCode enum을 직접 사용하는 메서드
-    public static <T> ApiResponse<T> error(ErrorCode errorCode) {
-        return ApiResponse.<T>builder()
+    public static <T> ApiResponseDTO<T> error(ErrorCode errorCode) {
+        return ApiResponseDTO.<T>builder()
                 .success(false)
                 .message(errorCode.getMessage())
                 .code(errorCode.getCode())
@@ -62,8 +62,8 @@ public class ApiResponse<T> {
     }
 
     // 커스텀 메시지와 ErrorCode를 함께 사용하는 메서드
-    public static <T> ApiResponse<T> error(String message, ErrorCode errorCode) {
-        return ApiResponse.<T>builder()
+    public static <T> ApiResponseDTO<T> error(String message, ErrorCode errorCode) {
+        return ApiResponseDTO.<T>builder()
                 .success(false)
                 .message(message)
                 .code(errorCode.getCode())
