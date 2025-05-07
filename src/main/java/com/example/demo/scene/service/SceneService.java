@@ -211,6 +211,8 @@ public class SceneService {
                 .theme(scene.getTheme())
                 .isMessageVisible(scene.isMessageVisible())
                 .ownerSocialId(scene.getUser() != null ? scene.getUser().getSocialId() : null)
+                .ownerNickname(scene.getUser() != null ? scene.getUser().getName() : null)
+                .ownerProfileImage(scene.getUser() != null ? scene.getUser().getProfileImageUrl() : null)
                 .build();
     }
 
