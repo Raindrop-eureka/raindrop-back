@@ -4,6 +4,7 @@ import com.example.demo.common.dto.ApiResponse;
 import com.example.demo.scene.dto.SceneRequest;
 import com.example.demo.scene.dto.SceneResponse;
 import com.example.demo.scene.dto.SceneUpdateVisibilityRequest;
+import com.example.demo.scene.exception.DuplicateSceneException;
 import com.example.demo.scene.service.SceneService;
 import com.example.demo.user.service.KakaoAuthService;
 import com.example.demo.utils.AESUtil;
@@ -142,4 +143,10 @@ public class SceneController {
         return ResponseEntity.ok(encryptedSceneId);
     }
 
+    // DuplicateSceneException 처리
+    @ExceptionHandler(DuplicateSceneException.class)
+    public ResponseEntity<ApiResponse<Void>> handleDuplicateSceneException(DuplicateSceneException e) {
+        ApiResponse<Void> errorResponse = ApiResponse.<Void>error(e.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+    }
 }
