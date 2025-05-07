@@ -42,7 +42,12 @@ public class MessageController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "서버 오류",
                     content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
-    public ResponseEntity<ApiResponse<Void>> saveMessage(@RequestBody MessageRequest request) {
+    public ResponseEntity<ApiResponse<Void>> saveMessage(
+            @CookieValue(name = "access-token", required = false) String accessToken,
+            @RequestBody MessageRequest request) {
+        if (accessToken == null) {
+            return ResponseEntity.status(401).body(ApiResponse.error("인증 실패"));
+        }
         messageService.createMessage(request);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
@@ -88,9 +93,12 @@ public class MessageController {
                     content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
     public ResponseEntity<ApiResponse<Void>> deleteMessage(
-            @RequestHeader("access-token") String accessToken,
+            @CookieValue(name = "access-token", required = false) String accessToken,
             @RequestBody MessageDeleteRequest request) {
 
+        if (accessToken == null) {
+            return ResponseEntity.status(401).body(ApiResponse.error("인증 실패"));
+        }
         messageService.deleteMessage(accessToken, request);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
