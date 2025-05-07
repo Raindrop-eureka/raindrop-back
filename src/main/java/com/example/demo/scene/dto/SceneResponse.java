@@ -16,4 +16,7 @@ public class SceneResponse {
     @JsonProperty("isMessageVisible")
     private boolean isMessageVisible;
     private String ownerSocialId;
+
+    private String ownerNickname;
+    private String ownerProfileImage;
 }

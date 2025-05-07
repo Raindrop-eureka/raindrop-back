@@ -7,15 +7,19 @@ import org.apache.ibatis.annotations.*;
 public interface SceneMapper {
     // Scene 조회 - scene_id 기준
     @Select("""
-        SELECT s.scene_id, s.social_id, s.theme, s.is_message_visible
+        SELECT s.scene_id, s.social_id, s.theme, s.is_message_visible,
+               u.name AS user_name, u.profile_image_url
         FROM scene s
+        LEFT JOIN user u ON s.social_id = u.social_id
         WHERE s.scene_id = #{sceneId}
-    """)
+""")
     @Results({
             @Result(property = "sceneId", column = "scene_id"),
-            @Result(property = "user.socialId", column = "social_id"),
             @Result(property = "theme", column = "theme"),
             @Result(property = "isMessageVisible", column = "is_message_visible"),
+            @Result(property = "user.socialId", column = "social_id"),
+            @Result(property = "user.name", column = "user_name"),
+            @Result(property = "user.profileImageUrl", column = "profile_image_url"),
     })
     Scene findBySceneId(Long sceneId);
 
@@ -40,15 +44,20 @@ public interface SceneMapper {
 
     // Scene 조회 - socialId 기반으로 Scene 찾기
     @Select("""
-        SELECT s.scene_id, s.social_id, s.theme, s.is_message_visible
+        SELECT s.scene_id, s.social_id, s.theme, s.is_message_visible,
+               u.name AS user_name, u.profile_image_url
         FROM scene s
+        LEFT JOIN user u ON s.social_id = u.social_id
         WHERE s.social_id = #{socialId}
     """)
     @Results({
             @Result(property = "sceneId", column = "scene_id"),
-            @Result(property = "user.socialId", column = "social_id"),
             @Result(property = "theme", column = "theme"),
             @Result(property = "isMessageVisible", column = "is_message_visible"),
+            @Result(property = "user.socialId", column = "social_id"),
+            @Result(property = "user.name", column = "user_name"),
+            @Result(property = "user.profileImageUrl", column = "profile_image_url"),
     })
     Scene findBySocialId(String socialId);
+
 }

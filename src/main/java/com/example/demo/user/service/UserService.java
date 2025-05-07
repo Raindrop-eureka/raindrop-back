@@ -34,6 +34,7 @@ public class UserService {
             User newUser = User.builder()
                     .socialId(socialId)
                     .name(nickname)
+                    .profileImageUrl(profileImageUrl)
                     .build();
             userMapper.saveUser(newUser);
             isNewUser = true;
