@@ -4,6 +4,7 @@ import com.example.demo.scene.domain.Scene;
 import com.example.demo.scene.dto.SceneRequest;
 import com.example.demo.scene.dto.SceneResponse;
 import com.example.demo.scene.dto.SceneUpdateVisibilityRequest;
+import com.example.demo.scene.exception.DuplicateSceneException;
 import com.example.demo.scene.repository.SceneMapper;
 import com.example.demo.user.domain.User;
 import com.example.demo.user.repository.UserMapper;
@@ -62,6 +63,12 @@ public class SceneService {
 
         String socialId = kakaoAccount.getEmail();
         log.info("Retrieved socialId from Kakao: {}", socialId);
+
+        Scene existingScene = sceneMapper.findBySocialId(socialId);
+        if (existingScene != null) {
+            log.error("Scene already exists for user with socialId: {}", socialId);
+            throw new DuplicateSceneException("이미 해당 사용자의 Scene이 존재합니다: " + socialId);
+        }
 
         // 사용자 정보 조회
         User user = userMapper.findBySocialId(socialId);
