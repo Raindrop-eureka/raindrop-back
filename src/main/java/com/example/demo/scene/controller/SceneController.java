@@ -28,7 +28,7 @@ public class SceneController {
     private final AESUtil aesUtil;
     private final KakaoAuthService kakaoAuthService;
 
-    @Operation(summary = "Scene 생성", description = "액세스 토큰을 통해 Scene 생성 후 암호화된 SceneId 반환")
+    @Operation(summary = "Scene 생성", description = "쿠키에서 액세스 토큰을 통해 Scene 생성 후 암호화된 SceneId 반환")
     @PostMapping
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
@@ -43,16 +43,22 @@ public class SceneController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "서버 오류",
                     content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
-    public ResponseEntity<String> createScene(
-            @RequestHeader("access-token") String accessToken,
+    public ResponseEntity<ApiResponse<String>> createScene(
+            @CookieValue(name = "access-token", required = false) String accessToken,
             @RequestBody SceneRequest request) {
+
+        if (accessToken == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.error("인증 실패"));
+        }
 
         Long sceneId = sceneService.createScene(accessToken, request);
         String encryptedSceneId = aesUtil.encrypt(String.valueOf(sceneId));
-        return ResponseEntity.status(HttpStatus.CREATED).body(encryptedSceneId);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success(encryptedSceneId));
     }
 
-    @Operation(summary = "Scene 수정 (테마 수정)", description = "액세스 토큰을 통해 사용자 인증 후 Scene 테마 수정")
+    @Operation(summary = "Scene 수정 (테마 수정)", description = "쿠키에서 액세스 토큰을 통해 사용자 인증 후 Scene 테마 수정")
     @PutMapping("/theme")  // 암호화된 sceneId
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
@@ -67,14 +73,20 @@ public class SceneController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "서버 오류",
                     content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
-    public ResponseEntity<Void> updateScene(
-            @RequestHeader("access-token") String accessToken,
+    public ResponseEntity<ApiResponse<Void>> updateScene(
+            @CookieValue(name = "access-token", required = false) String accessToken,
             @RequestBody SceneRequest request) {
+
+        if (accessToken == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.error("인증 실패"));
+        }
+
         sceneService.updateScene(accessToken, request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
 
-    @Operation(summary = "Scene 메시지 공개 상태 수정", description = "액세스 토큰을 통해 사용자 인증 후 Scene의 메시지 공개 여부를 수정")
+    @Operation(summary = "Scene 메시지 공개 상태 수정", description = "쿠키에서 액세스 토큰을 통해 사용자 인증 후 Scene의 메시지 공개 여부를 수정")
     @PutMapping("/visibility")  // 암호화된 sceneId
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
@@ -89,11 +101,17 @@ public class SceneController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "서버 오류",
                     content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
-    public ResponseEntity<Void> updateVisibility(
-            @RequestHeader("access-token") String accessToken,
+    public ResponseEntity<ApiResponse<Void>> updateVisibility(
+            @CookieValue(name = "access-token", required = false) String accessToken,
             @RequestBody SceneUpdateVisibilityRequest request) {
+
+        if (accessToken == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.error("인증 실패"));
+        }
+
         sceneService.updateVisibility(accessToken, request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
 
     @Operation(summary = "Scene 정보 조회", description = "암호화된 SceneId를 통해 Scene 정보 조회")
@@ -111,14 +129,14 @@ public class SceneController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "서버 오류",
                     content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
-    public ResponseEntity<SceneResponse> getScene(
+    public ResponseEntity<ApiResponse<SceneResponse>> getScene(
             @PathVariable String encryptedSceneId) {
         Long sceneId = aesUtil.decryptSceneId(encryptedSceneId);
         SceneResponse response = sceneService.getScene(sceneId);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    @Operation(summary = "AccessToken을 받아 암호화된 Scene ID 반환", description = "헤더에서 accessToken을 받아 사용자가 조회할 수 있는 Scene ID를 암호화하여 반환")
+    @Operation(summary = "AccessToken을 받아 암호화된 Scene ID 반환", description = "쿠키에서 accessToken을 받아 사용자가 조회할 수 있는 Scene ID를 암호화하여 반환")
     @GetMapping
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공"),
@@ -133,14 +151,19 @@ public class SceneController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "서버 오류",
                     content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
-    public ResponseEntity<String> getEncryptedSceneId(@RequestHeader("access-token") String accessToken) {
+    public ResponseEntity<ApiResponse<String>> getEncryptedSceneId(
+            @CookieValue(name = "access-token", required = false) String accessToken) {
+
+        if (accessToken == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.error("인증 실패"));
+        }
+
         String socialId = kakaoAuthService.getUserInfo(accessToken).getKakao_account().getEmail();
-
         Long sceneId = sceneService.getSceneIdBySocialId(socialId);
-
         String encryptedSceneId = aesUtil.encrypt(String.valueOf(sceneId));
 
-        return ResponseEntity.ok(encryptedSceneId);
+        return ResponseEntity.ok(ApiResponse.success(encryptedSceneId));
     }
 
     // DuplicateSceneException 처리
