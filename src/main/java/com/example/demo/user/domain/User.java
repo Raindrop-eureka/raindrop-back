@@ -11,10 +11,12 @@ import lombok.Setter;
 public class User {
     private String socialId;
     private String name;
+    private String profileImageUrl;
 
     @Builder
-    public User(String socialId, String name) {
+    public User(String socialId, String name,  String profileImageUrl) {
         this.socialId = socialId;
         this.name = name;
+        this.profileImageUrl = profileImageUrl;
     }
 }
