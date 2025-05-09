@@ -42,12 +42,7 @@ public class MessageController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "서버 오류",
                     content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
-    public ResponseEntity<ApiResponse<Void>> saveMessage(
-            @CookieValue(name = "access-token", required = false) String accessToken,
-            @RequestBody MessageRequest request) {
-        if (accessToken == null) {
-            return ResponseEntity.status(401).body(ApiResponse.error("인증 실패"));
-        }
+    public ResponseEntity<ApiResponse<Void>> saveMessage(@RequestBody MessageRequest request) {
         messageService.createMessage(request);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
