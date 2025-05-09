@@ -17,13 +17,15 @@ public class Message {
     private Scene scene; // Scene 객체
     private String nickname;
     private String content;
+    private String modelId; // 3D 모델과 매핑을 위한 필드 추가
     private LocalDateTime createdAt;
 
     @Builder
-    public Message(Scene scene, String nickname, String content, LocalDateTime createdAt) {
+    public Message(Scene scene, String nickname, String content, String modelId, LocalDateTime createdAt) {
         this.scene = scene;
         this.nickname = nickname;
         this.content = content;
+        this.modelId = modelId;
         this.createdAt = createdAt;
     }
 
