@@ -82,7 +82,7 @@ public class MessageService {
         return message;
     }
 
-    // 메시지 삭제 (변경 필요 없음)
+    // 메시지 삭제
     @Transactional
     public void deleteMessage(String accessToken, MessageDeleteRequest request) {
         // 1. accessToken을 이용해 Kakao 사용자 정보 조회
