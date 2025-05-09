@@ -12,5 +12,6 @@ public class MessageDto {
     private Long sceneId;
     private String nickname;
     private String content;
+    private String modelId;
     private LocalDateTime createdAt;
 }

@@ -53,6 +53,7 @@ public class MessageService {
                         message.getMessageId(),
                         message.getNickname(),
                         message.getContent(),
+                        message.getModelId(), // 3D 모델 ID 추가
                         message.getCreatedAt()))
                 .collect(Collectors.toList());
     }
@@ -63,7 +64,6 @@ public class MessageService {
         // sceneId를 복호화
         Long sceneId = aesUtil.decryptSceneId(request.getSceneId());  // 복호화된 sceneId 사용
 
-
         Scene scene = sceneMapper.findBySceneId(sceneId);
         if (scene == null) {
             throw new ResourceNotFoundException("Scene not found with ID: " + request.getSceneId());
@@ -73,6 +73,7 @@ public class MessageService {
                 .scene(scene)
                 .nickname(request.getNickname())
                 .content(request.getContent())
+                .modelId(request.getModelId()) // 3D 모델 ID 설정
                 .createdAt(LocalDateTime.now()) // 현재 시간 설정
                 .build();
 
@@ -81,7 +82,7 @@ public class MessageService {
         return message;
     }
 
-    // 메시지 삭제
+    // 메시지 삭제 (변경 필요 없음)
     @Transactional
     public void deleteMessage(String accessToken, MessageDeleteRequest request) {
         // 1. accessToken을 이용해 Kakao 사용자 정보 조회

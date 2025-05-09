@@ -9,4 +9,5 @@ public class MessageRequest {
     private String sceneId;
     private String nickname;
     private String content;
+    private String modelId;
 }
