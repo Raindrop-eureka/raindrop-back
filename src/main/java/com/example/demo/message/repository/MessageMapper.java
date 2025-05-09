@@ -10,15 +10,15 @@ public interface MessageMapper {
 
     // sceneId에 해당하는 메시지들 조회
     @Select("""
-        SELECT message_id, scene_id, nickname, content, created_at 
+        SELECT message_id, scene_id, nickname, content, model_id, created_at 
         FROM message 
         WHERE scene_id = #{sceneId}
     """)
     List<Message> findMessagesBySceneId(Long sceneId);
 
     // 메시지 생성
-    @Insert("INSERT INTO message (scene_id, nickname, content, created_at) " +
-            "VALUES (#{scene.sceneId}, #{nickname}, #{content}, NOW())")
+    @Insert("INSERT INTO message (scene_id, nickname, content, model_id, created_at) " +
+            "VALUES (#{scene.sceneId}, #{nickname}, #{content}, #{modelId}, NOW())")
     @Options(useGeneratedKeys = true, keyProperty = "messageId")
     void saveMessage(Message message);
 

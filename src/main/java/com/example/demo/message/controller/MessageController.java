@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/messages")
+@RequestMapping("/api/messages")
 @RequiredArgsConstructor
 @Tag(name="Message",description = "메시지 정보")
 public class MessageController {
