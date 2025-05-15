@@ -14,6 +14,6 @@ public class KakaoConfig {
     @Value("${kakao.client-id}")
     private String clientId;
 
-    @Value("${kakao.redirect-uri")
+    @Value("${kakao.redirect-uri}")
     private String redirectUri;
 }
