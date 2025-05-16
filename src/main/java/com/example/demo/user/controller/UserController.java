@@ -49,7 +49,7 @@ public class UserController {
                 .sameSite("None")           // 크로스 사이트 요청 허용
                 .path("/")                  // 모든 경로에서 사용 가능
                 .maxAge(3600)               // 1시간 유효
-                .domain("raindrop-front.vercel.app")
+                .domain("raindrop-back.onrender.com")
                 .build();
 
         // HTTP Only 쿠키로 refreshToken 설정
@@ -59,7 +59,7 @@ public class UserController {
                 .sameSite("None")
                 .path("/")
                 .maxAge(2592000)           // 30일 유효
-                .domain("raindrop-front.vercel.app")
+                .domain("raindrop-back.onrender.com")
                 .build();
 
         // 클라이언트에게 성공 메시지만 반환하고 토큰은 쿠키로 전송
