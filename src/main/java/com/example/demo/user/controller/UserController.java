@@ -66,8 +66,10 @@ public class UserController {
         LoginResponse response = new LoginResponse("로그인 성공", true);
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
-                .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
+                .headers(headers -> {
+                    headers.add(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
+                    headers.add(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+                })
                 .body(response);
     }
 
